@@ -113,8 +113,32 @@ function RandomDataGenerator(n) {
   }
   return data;
 }
+function New_Schema_RandomDataGenerator(n,did) {
+  const data = [];
+  for (var i = 0; i < n; i++) {
+    const tempTime = RandomTimeGenerator(2022);
+    const temploc = RandomLocationGenerator(2, 23, 72);
+    const tempRev = RandomRevenueGenerator();
+    const tempCity = RandomCityGenerator();
+    const temp = {
+      tid: did +i + 1,
+      did: did,
+      stime: tempTime[0],
+      etime: tempTime[1],
+      sloc: temploc[0],
+      eloc: temploc[1],
+      revenue: tempRev,
+      city_id: tempCity.id,
+    };
 
-function RandomDriverDataGenerator(n) {
+    data.push(temp);
+  }
+  return data;
+}
+
+
+
+function RandomDriverDataGenerator(n, min, max) {
   const data = [];
   for (let i = 0; i < n; i++) {
     const did = RandomDriverIdGenerator();
@@ -127,7 +151,8 @@ function RandomDriverDataGenerator(n) {
     if (x % 69 == 0) {
       working = false;
     }
-    const trips = RandomDataGenerator(360);
+
+    const trips = RandomDataGenerator(Math.floor(Math.random() * (max - min) + min));
 
     const obj = {
       did: did,
@@ -143,12 +168,68 @@ function RandomDriverDataGenerator(n) {
   return data;
 }
 
-const jsonContent = JSON.stringify(RandomDriverDataGenerator(100));
+function New_Schema_RandomDriverDataGenerator(n, min, max) {
+  const drivers = [];
+  const new_trips =[];
+  for (let i = 0; i < n; i++) {
+    const did = RandomDriverIdGenerator();
+    const fname = RandomFnameGenerator();
+    const lname = RandomLnameGenerator();
+    const bdate = RandomBirthDateGenerator();
+    const dlno = RandomLicenseGenerator();
+    var x = Math.floor(Math.random * 1000);
+    const working = true;
+    if (x % 69 == 0) {
+      working = false;
+    }
 
-fs.writeFile("./final.json", jsonContent, "utf8", function (err) {
+    const trips = New_Schema_RandomDataGenerator(Math.floor(Math.random() * (max - min) + min), did);
+
+    const obj = {
+      did: did,
+      fname: fname,
+      lname: lname,
+      bdate: bdate,
+      dlno: dlno,
+      working: working,
+    };
+
+    drivers.push(obj);
+    trips.forEach((e)=>{
+      new_trips.push(e)
+    })
+    
+
+  }
+  return [drivers,new_trips];
+}
+
+
+const New_jsonContent = New_Schema_RandomDriverDataGenerator(360,120,360);
+
+
+fs.writeFile("./new_drivers.json", JSON.stringify(New_jsonContent[0]), "utf8", function (err) {
+  if (err) {
+    return console.log(err);
+  }
+  console.log("The Drivers file was saved!");
+});
+
+fs.writeFile("./new_Trips.json", JSON.stringify(New_jsonContent[1]), "utf8", function (err) {
   if (err) {
     return console.log(err);
   }
 
-  console.log("The file was saved!");
+  console.log("The Trips file was saved!");
 });
+
+
+// const jsonContent = JSON.stringify(RandomDriverDataGenerator(360,120,360));
+
+// fs.writeFile("./newData.json", jsonContent, "utf8", function (err) {
+//   if (err) {
+//     return console.log(err);
+//   }
+
+//   console.log("The file was saved!");
+// });
